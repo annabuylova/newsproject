@@ -1,0 +1,55 @@
+---
+title: "Python project"
+author: "Stiven"
+date: "13 06 2020"
+output: html_document
+---
+
+```{r}
+library(magrittr)
+library(dplyr)
+news_data <- read.csv("C:/NewsProject/data/News_data",encoding = "CP1251")
+clean_pairs <- read.csv("C:/NewsProject/data/clean_pairs",encoding = "UTF-8")
+new_table <- news_data %>% select(word,score, time) %>% filter(word==toString(clean_pairs$word[1]))
+new_table2 <- news_data %>% select(word,score, time) %>% filter(word==toString(clean_pairs$word[2]))
+plot(#x = new_table$time,      # что будет на оси х
+     new_table$score,
+     type = "l",             # графики - линии
+     xlab = "Date",          # название оси
+     ylab = "Score",
+     col = "blue",
+     lty = 1,                # тип линии (1-обычная, 2,3 - штрихи)
+     lwd = 2,                # ширина линии
+     main = "words"  )  # что будет на оси y      )
+for (i in clean_pairs$word){
+  new_table <- news_data %>% select(word,score, time) %>% filter(word==toString(i))
+  lines(#x = new_table$time,      # что будет на оси х
+       new_table$score,
+       type = "l",             # графики - линии
+       xlab = "Date",          # название оси
+       ylab = "Score",
+       col = "red",
+       lty = 1,                # тип линии (1-обычная, 2,3 - штрихи)
+       lwd = 2,                # ширина линии
+       main = "words"  )  # что будет на оси y      )
+}
+
+```
+Какого-либо паттерна в динамике популярности запросов найти не удалось, что видно и на графике.
+
+Рассмотрим различия в популярности запроса в зависимости от языка. (Интерес русскоговорящих и англоговорящих)
+
+```{r}
+library(tidyverse)
+wordstat_eng_full<- read.csv("C:/NewsProject/data/Wordstat_eng_full", encoding = 'UTF-8')
+wordstat_full<- read.csv("C:/NewsProject/data/Wordstat_full", encoding = 'UTF-8')
+top_wordstat <- wordstat_full %>%  group_by(Word) %>% summarise(mean.reg_pop = mean(Regional.pop.))%>% arrange(desc(mean.reg_pop))
+top_wordstat_eng <- wordstat_eng_full %>%  group_by(Word) %>% summarise(mean.reg_pop_eng = mean(Regional.pop.))%>% arrange(desc(mean.reg_pop_eng))
+two_langs <- merge(top_wordstat,top_wordstat_eng, on='word')
+cor(as.numeric(two_langs$mean.reg_pop_eng),as.numeric(two_langs$mean.reg_pop_eng))
+```
+
+
+
+
+
